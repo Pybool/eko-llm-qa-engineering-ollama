@@ -1,6 +1,6 @@
-# LLM Quality Engineering Lab — Modules 01–08
+# LLM Quality Engineering Lab
 
-A hands-on QA curriculum: understand LLM mechanisms, trigger realistic failure modes, and turn each finding into an automated regression test.
+A hands-on QA practice: understand LLM mechanisms, trigger realistic failure modes, and turn each finding into an automated regression test.
 
 ## One-time setup (Windows 11, PowerShell)
 
@@ -41,24 +41,6 @@ To inspect code in VS Code: `code .`
 
 We will add implementation and tests to this **same project** module by module. Only Module 01 is implemented in this starter kit. Later modules are deliberately empty until you understand the preceding material.
 
-## Module 01
-
-Read `modules/01-tokenization/LESSON.md` and `modules/01-tokenization/CHALLENGES.md`.
-
-Run:
-
-```powershell
-uv run python -m llmqa.token_demo
-uv run pytest -q
-```
-
-Then deliberately expose two bugs:
-
-```powershell
-uv run pytest -q exercises/test_find_the_bugs.py
-```
-
-These exercise tests are **supposed to fail**. Repair `src/llmqa/unsafe_budget.py` so they pass, and then add cases for Unicode, text with no spaces, output reservation, and the exact boundary. Compare your proposed implementation to the safe, injectable counter in `src/llmqa/token_budget.py`.
 
 ## Important accuracy limitations
 
@@ -70,3 +52,4 @@ These exercise tests are **supposed to fail**. Repair `src/llmqa/unsafe_budget.p
 ## Safe project practices
 
 Keep credentials only in local `.env` files (gitignored). Do not commit keys or production personal information. Use synthetic datasets in test cases.
+
