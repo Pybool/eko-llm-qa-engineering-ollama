@@ -1,0 +1,24 @@
+[project]
+name = "llm-qa-engineering-lab"
+version = "0.1.0"
+description = "Practical lessons and QA test labs for understanding and testing LLM systems"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+  "tiktoken>=0.9,<1",
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=8,<10",
+]
+
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/llmqa"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
