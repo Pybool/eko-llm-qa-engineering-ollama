@@ -10,3 +10,7 @@ htmlcov/
 *.log
 modules/
 exercises
+.env.example
+.env
+.env.*
+!.env.example

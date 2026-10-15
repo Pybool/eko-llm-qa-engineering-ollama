@@ -10,7 +10,13 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+  "deepeval>=4.2.9",
+  "google-genai>=2.31.0",
+  "litellm>=1.105.1",
+  "ollama>=0.6.3",
+  "openai>=2.54.0",
   "pytest>=8,<10",
+  "python-dotenv>=1.2.4",
 ]
 
 [build-system]

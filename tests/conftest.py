@@ -3,6 +3,7 @@ import os
 import pytest
 
 from tests.helpers.auth_helper import AuthHelper
+from src.llmqa.providers.model_provider import ModelProvider
 from tests.helpers.token_counter_helper import TokenCounterHelper
 
 @pytest.fixture
@@ -27,3 +28,8 @@ def token_counter():
         yield counter
     finally:
         counter.close()
+        
+
+@pytest.fixture(scope="session")
+def judge_model():
+    return ModelProvider.from_env().get_model()
