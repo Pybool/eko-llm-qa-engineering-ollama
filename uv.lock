@@ -105,6 +105,7 @@ name = "llm-qa-engineering-lab"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "requests" },
     { name = "tiktoken" },
 ]
 
@@ -114,7 +115,10 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "tiktoken", specifier = ">=0.9,<1" }]
+requires-dist = [
+    { name = "requests", specifier = ">=2.34.2" },
+    { name = "tiktoken", specifier = ">=0.9,<1" },
+]
 
 [package.metadata.requires-dev]
 dev = [{ name = "pytest", specifier = ">=8,<10" }]

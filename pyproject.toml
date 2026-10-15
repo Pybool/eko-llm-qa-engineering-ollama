@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Practical lessons and QA test labs for understanding and testing LLM systems"
 requires-python = ">=3.12,<3.14"
 dependencies = [
+  "requests>=2.34.2",
   "tiktoken>=0.9,<1",
 ]
 
