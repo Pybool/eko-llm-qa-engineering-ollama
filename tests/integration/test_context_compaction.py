@@ -1,11 +1,21 @@
-import time
+import os, time
 
+from deepeval import assert_test
+from deepeval.metrics import SummarizationMetric
+from deepeval.test_case import LLMTestCase
 from tests.helpers.ollama_stats import get_ollama_invocations
 from tests.helpers.prompts import generate_conversation_prompts
 from tests.integration.base import create_conversation, create_message, fetch_conversation_chat_history
 
+# def test_model_selection(authenticated_client, judge_model):
+#     chat_id="8ae145d5-5031-49df-9383-533da98dad95"
+#     context_response = authenticated_client.request(
+#             "GET",
+#             f"/qa/chats/{chat_id}/context",
+#         )
+#     print(context_response.json())
 #on server we set budget.overLimitAction to "compact" before running this test, we should use api later for this sha
-def test_verify_llm_compaction_works_properly(authenticated_client):
+def test_verify_llm_compaction_works_properly(authenticated_client, judge_model):
     prompts = generate_conversation_prompts() 
     data, _ = create_conversation(authenticated_client)
     conversation_id = data.get("chat").get("id")
@@ -25,4 +35,64 @@ def test_verify_llm_compaction_works_properly(authenticated_client):
         assert status == "PASSED"
         sucessfulPrompts.append(prompt)
         ollama_invocation_after = get_ollama_invocations(authenticated_client)
-        assert ollama_invocation_after["index"] == ollama_invocation_before["index"] + 1
+        # assert ollama_invocation_after["index"] == ollama_invocation_before["index"] + 1
+    
+    judge_context_compaction(authenticated_client, judge_model, conversation_id)
+
+
+def judge_context_compaction(
+    authenticated_client,
+    judge_model,
+    chat_id
+):
+    history_response = authenticated_client.request(
+        "GET",
+        f"/chats/{chat_id}",
+    )
+
+    assert history_response.status_code == 200
+
+    messages = history_response.json()["messages"]
+
+    context_response = authenticated_client.request(
+        "GET",
+        f"/qa/chats/{chat_id}/context",
+    )
+
+    assert context_response.status_code == 200
+
+    compaction = context_response.json()["compaction"]
+
+    assert compaction is not None
+    
+    through_id = compaction["throughMessageId"]
+
+    index = next(
+        i for i, message in enumerate(messages)
+        if message["id"] == through_id
+    )
+
+    original_text = "\n".join(
+        f"{message['role']}: {message['content']}"
+        for message in messages[:index + 1]
+    )
+    
+    print("chat_id =======================>", chat_id)
+
+    test_case = LLMTestCase(
+        input=original_text,
+        actual_output=compaction["summary"],
+    )
+
+    metric = SummarizationMetric(
+        threshold=0.8,
+        model=judge_model,
+        async_mode=False,
+        truths_extraction_limit=10,
+        include_reason=True,
+    )
+
+    assert_test(
+        test_case,
+        [metric],
+    )

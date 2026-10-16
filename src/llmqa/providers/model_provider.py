@@ -28,7 +28,7 @@ class ModelProvider:
 
     DEFAULT_MODELS = {
         "ollama": "qwen2.5:7b",
-        "gemini": "gemini-2.5-flash",
+        "gemini": "gemini-3.1-flash-lite",
         "openai": "gpt-4.1-mini",
     }
 
@@ -56,7 +56,7 @@ class ModelProvider:
         load_dotenv(override=False)
 
         provider = os.getenv(
-            "EVAL_PROVIDER", "ollama"
+            "EVAL_PROVIDER", "gemini"
         ).strip().lower()
 
         provider = cls.ALIASES.get(
@@ -89,6 +89,8 @@ class ModelProvider:
             base_url=os.getenv("EVAL_BASE_URL") or None,
             api_key=os.getenv("EVAL_API_KEY") or None,
         )
+        
+        print("==============> ", config)
 
         return cls(config)
 

@@ -1,55 +1,51 @@
 # LLM Quality Engineering Lab
 
-A hands-on QA practice: understand LLM mechanisms, trigger realistic failure modes, and turn each finding into an automated regression test.
+A personal QA project where I'm testing how LLM applications behave when their context window starts filling up, and what happens when they eventually run out of space, I'm planning to cover instruction retention, hallucinations, prompt injection and other LLM failure scenarios as I go.
 
-## One-time setup (Windows 11, PowerShell)
 
-Install Git, VS Code and uv if you don't already have them:
+The app I'm testing is here: [ContextLab LLM Engineering App](https://github.com/Pybool/context-lab-llm-engineering-app). It runs on Ollama.
+
+## What I've been testing
+
+Most of the work so far is around two server configurations:
+
+**1. Reject on context limit**
+
+When the conversation becomes too large, the server should reject the request instead of sending it to Ollama.
+
+I'm checking that:
+- The token budget is calculated correctly, including boundary cases.
+- Requests exceeding the limit are rejected.
+- Previous conversation history is not affected by the rejection.
+- Ollama isn't called again for rejected requests.
+
+**2. Compact on context limit**
+
+Instead of rejecting, the server can summarise older messages to free up context space.
+
+Here I'm testing that conversations can continue after compaction and checking how the server handles the growing history.
+
+I've also added some tests around authentication, creating and retrieving conversations, token counting and tracking Ollama invocations.
+
+I'm gradually adding DeepEval to check the quality of the compacted summaries, since just reducing token count doesn't mean important information was actually retained.
+
+## Tools
+
+Python, pytest, uv, Ollama, DeepEval and Requests.
+
+## Running the tests
+
+I'm using Python 3.12 and uv for dependency management.
 
 ```powershell
-winget install --id Git.Git -e
-winget install --id Microsoft.VisualStudioCode -e
-winget install --id astral-sh.uv -e
-```
-
-Open a **new** PowerShell terminal:
-
-```powershell
-uv python install 3.12
-cd path\to\llm-qa-engineering-lab
 uv sync
-uv run python -m llmqa.token_demo
 uv run pytest -q
 ```
 
-`uv sync` creates a Python environment and installs the Module 01 packages. `uv run` uses that project's environment automatically; there is no need to activate it manually.
+For the integration tests, the ContextLab app and Ollama need to be running locally. The server configuration also needs to match the scenario being tested (`reject` or `compact`).
 
-To inspect code in VS Code: `code .`
+## Still working on
 
-## Our progressive curriculum
+This is still an ongoing project. I'm planning to cover instruction retention, hallucinations, prompt injection and other LLM failure scenarios as I go.
 
-| Module | Focus | Practical deliverable |
-|---|---|---|
-| 01 | Tokenization, budgets, truncation | Token-budget analyzer and boundary tests |
-| 02 | Transformer inference and decoding | Output consistency and decoding experiment |
-| 03 | Context assembly and hierarchy | Context confusion and instruction-retention tests |
-| 04 | Compaction and memory | Long-context state-retention regression suite |
-| 05 | RAG | Retrieval, grounding and citation failure tests |
-| 06 | Tools and agent loops | Tool-use state-machine and recovery tests |
-| 07 | AI security | Prompt-injection and unauthorized-action test suite |
-| 08 | Automated evaluation and CI/CD | Golden datasets, calibrated metrics and pipeline gates |
-
-We will add implementation and tests to this **same project** module by module. Only Module 01 is implemented in this starter kit. Later modules are deliberately empty until you understand the preceding material.
-
-
-## Important accuracy limitations
-
-- `tiktoken` is for OpenAI tokenization. **It does not count Claude tokens exactly.** Use the Claude API token-count endpoint to measure a real Claude request when we introduce API tests.
-- Tokenizing content strings is not equivalent to counting an entire API request, because messages, tools, images and other inputs have framing or model-specific costs. `token_budget.py` deliberately models overhead as an assumption.
-- A token budget test does not prove an LLM answer is correct; it only checks one infrastructure risk.
-- Everything in Module 01 runs without an API key or GPU.
-
-## Safe project practices
-
-Keep credentials only in local `.env` files (gitignored). Do not commit keys or production personal information. Use synthetic datasets in test cases.
-
+The main idea is to showcase my understanding of how these systems actually behave, find where things can go wrong and automate the tests so I can catch those issues again later.
