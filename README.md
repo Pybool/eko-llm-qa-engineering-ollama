@@ -6,6 +6,19 @@ I'm using a separate application, [ContextLab LLM Engineering App](https://githu
 
 The goal is to evaluate both **application reliability** and **LLM behavior**, using API-level integration tests, deterministic assertions, and AI-assisted evaluations.
 
+## Tools & Technologies
+
+**Language:** Python 3.12
+
+**Testing:** pytest, Requests, DeepEval
+
+**LLM Infrastructure:** Ollama, Qwen, LiteLLM, Groq, Gemini, OpenAI
+
+**Tokenization:** tiktoken, model-specific token counting
+
+**Dependency Management:** uv
+
+
 ## Test Coverage
 
 ### 1. Token Budget & Context Window Management
@@ -94,18 +107,6 @@ tests/conftest.py
 The test suite uses reusable helpers and fixtures to reduce duplication and manage test prerequisites.
 
 Tests that modify the application's context configuration can restore the default settings afterward, reducing configuration leakage between tests.
-
-## Tools & Technologies
-
-**Language:** Python 3.12
-
-**Testing:** pytest, Requests, DeepEval
-
-**LLM Infrastructure:** Ollama, Qwen, LiteLLM, Groq, Gemini, OpenAI
-
-**Tokenization:** tiktoken, model-specific token counting
-
-**Dependency Management:** uv
 
 ## Running the Tests
 
