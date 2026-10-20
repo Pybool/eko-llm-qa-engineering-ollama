@@ -4,6 +4,8 @@ version = "0.1.0"
 description = "Practical lessons and QA test labs for understanding and testing LLM systems"
 requires-python = ">=3.12,<3.14"
 dependencies = [
+  "litellm>=1.105.1",
+  "python-dotenv>=1.2.4",
   "requests>=2.34.2",
   "tiktoken>=0.9,<1",
 ]
@@ -28,4 +30,5 @@ packages = ["src/llmqa"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-ra"
+addopts = "-q --tb=short --show-capture=no --disable-warnings"
+log_level = "ERROR"

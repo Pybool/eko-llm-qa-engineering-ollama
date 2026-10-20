@@ -839,6 +839,8 @@ name = "llm-qa-engineering-lab"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "litellm" },
+    { name = "python-dotenv" },
     { name = "requests" },
     { name = "tiktoken" },
 ]
@@ -856,6 +858,8 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "litellm", specifier = ">=1.105.1" },
+    { name = "python-dotenv", specifier = ">=1.2.4" },
     { name = "requests", specifier = ">=2.34.2" },
     { name = "tiktoken", specifier = ">=0.9,<1" },
 ]

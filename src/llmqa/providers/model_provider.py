@@ -30,12 +30,14 @@ class ModelProvider:
         "ollama": "qwen2.5:7b",
         "gemini": "gemini-3.1-flash-lite",
         "openai": "gpt-4.1-mini",
+        "litellm": "groq/openai/gpt-oss-120b",
     }
 
     ALIASES = {
         "local": "ollama",
         "chatgpt": "openai",
         "gpt": "openai",
+        "litellm": "litellm"
     }
 
     def __init__(self, config: ModelConfig):
@@ -56,7 +58,7 @@ class ModelProvider:
         load_dotenv(override=False)
 
         provider = os.getenv(
-            "EVAL_PROVIDER", "gemini"
+            "EVAL_PROVIDER", "litellm"
         ).strip().lower()
 
         provider = cls.ALIASES.get(
@@ -158,31 +160,29 @@ class ModelProvider:
                 ),
             )
 
+        
         if cfg.provider == "litellm":
             from deepeval.models import LiteLLMModel
+            from llmqa.providers.groq_judge_model import GroqRateAwareModel
 
-            if "/" not in cfg.model:
-                raise ValueError(
-                    "LiteLLM requires a provider-prefixed "
-                    "model name, such as "
-                    "'anthropic/claude-sonnet-4-6'."
+            if cfg.model.startswith("groq/"):
+                return GroqRateAwareModel(
+                    model=cfg.model,
+                    api_key=self._get_api_key("GROQ_API_KEY"),
+                    temperature=cfg.temperature,
+                    base_url=cfg.base_url,
+                    tokens_per_minute=int(
+                        os.getenv("EVAL_GROQ_TPM", "8000")
+                    ),
+                    requests_per_minute=int(
+                        os.getenv("EVAL_GROQ_RPM", "30")
+                    ),
+                    max_attempts=5,
                 )
 
             return LiteLLMModel(
                 model=cfg.model,
                 temperature=cfg.temperature,
-                **(
-                    {"base_url": cfg.base_url}
-                    if cfg.base_url
-                    else {}
-                ),
-                **(
-                    {"api_key": cfg.api_key}
-                    if cfg.api_key
-                    else {}
-                ),
+                **({"api_key": cfg.api_key} if cfg.api_key else {}),
+                **({"base_url": cfg.base_url} if cfg.base_url else {}),
             )
-
-        raise ValueError(
-            f"Unsupported provider: {cfg.provider}"
-        )

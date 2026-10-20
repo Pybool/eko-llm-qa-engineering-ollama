@@ -28,6 +28,8 @@ def create_message(authenticated_client, conversation_id, prompt):
         json=payload
     )
     
+    print("========================== Prompt response ========================== \n", response.json())
+    
     if response.status_code == 413:
         assert response.json()["error"]["code"] == "CONTEXT_LIMIT_EXCEEDED"
         assert response.json()["error"]["details"]["budget"]["allowed"] == False

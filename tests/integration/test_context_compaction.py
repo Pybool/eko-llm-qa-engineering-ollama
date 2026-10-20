@@ -1,20 +1,14 @@
-import os, time
+import time
 
 from deepeval import assert_test
 from deepeval.metrics import SummarizationMetric
 from deepeval.test_case import LLMTestCase
 from tests.helpers.ollama_stats import get_ollama_invocations
-from tests.helpers.prompts import generate_conversation_prompts
-from tests.integration.base import create_conversation, create_message, fetch_conversation_chat_history
+from tests.helpers.utilities import message_joiner
 
-# def test_model_selection(authenticated_client, judge_model):
-#     chat_id="8ae145d5-5031-49df-9383-533da98dad95"
-#     context_response = authenticated_client.request(
-#             "GET",
-#             f"/qa/chats/{chat_id}/context",
-#         )
-#     print(context_response.json())
-#on server we set budget.overLimitAction to "compact" before running this test, we should use api later for this sha
+from tests.helpers.prompts import generate_conversation_prompts
+from tests.integration.base import create_conversation, create_message
+
 def test_verify_llm_compaction_works_properly(authenticated_client, judge_model):
     prompts = generate_conversation_prompts() 
     data, _ = create_conversation(authenticated_client)
@@ -72,10 +66,7 @@ def judge_context_compaction(
         if message["id"] == through_id
     )
 
-    original_text = "\n".join(
-        f"{message['role']}: {message['content']}"
-        for message in messages[:index + 1]
-    )
+    original_text = message_joiner(messages, through_id)
     
     print("chat_id =======================>", chat_id)
 
